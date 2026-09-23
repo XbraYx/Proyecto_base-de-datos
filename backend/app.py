@@ -4,6 +4,7 @@ import mysql.connector
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from mysql.connector import Error
+from flask_cors import CORS
 
 
 load_dotenv()
@@ -23,7 +24,7 @@ def get_database_connection():
 
 def create_app():
     app = Flask(__name__)
-
+    CORS(app)
     # ---------------------------------------------------------
     # RUTA PRINCIPAL
     # ---------------------------------------------------------
@@ -238,6 +239,67 @@ def create_app():
 
             if connection and connection.is_connected():
                 connection.close()
+
+     # aqui empieza 
+    @app.get("/api/paquetes")
+    def get_paquetes():
+        connection = None
+        cursor = None
+
+        try:
+            connection = get_database_connection()
+
+            cursor = connection.cursor(dictionary=True)
+
+            cursor.execute("""
+                SELECT
+                    p.id,
+                    p.tracking_number,
+                    p.origin,
+                    p.destination,
+                    p.weight_kg,
+                    p.estimated_delivery,
+                    p.delivered_at,
+
+                    c.name AS cliente,
+
+                    ep.name AS estado,
+
+                    d.drone_code AS drone
+
+                FROM paquetes p
+
+                INNER JOIN clientes c
+                    ON p.client_id = c.id
+
+                INNER JOIN estados_paquete ep
+                    ON p.status_id = ep.id
+
+                LEFT JOIN drones d
+                    ON p.drone_id = d.id
+
+                ORDER BY p.id;
+            """)
+
+            paquetes = cursor.fetchall()
+
+            return jsonify(paquetes)
+
+        except Error as error:
+            return jsonify({
+                "status": "error",
+                "message": "No fue posible obtener los paquetes.",
+                "details": str(error)
+            }), 500
+
+        finally:
+            if cursor:
+                cursor.close()
+
+            if connection and connection.is_connected():
+                connection.close() 
+        
+        #            
 
     # ---------------------------------------------------------
     # ACTUALIZAR ESTADO Y BATERÍA DE UN DRON

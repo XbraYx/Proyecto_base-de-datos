@@ -1,0 +1,118 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DroneTrack</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>DroneTrack</h1>
+        <p>Sistema de seguimiento de paquetes</p>
+    </header>
+
+    <main>
+
+        <section class="tracking">
+            <h2>Rastrear paquete</h2>
+
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="trackingInput"
+                    placeholder="Ej. DT-000001"
+                >
+
+                <button onclick="buscarPaquete()">
+                    Buscar
+                </button>
+            </div>
+
+            <p id="message"></p>
+        </section>
+
+
+        <section id="packageInfo" class="package-info hidden">
+
+            <h2>Información del paquete</h2>
+
+            <div class="info-grid">
+
+                <div>
+                    <strong>Número de rastreo</strong>
+                    <p id="trackingNumber">-</p>
+                </div>
+
+                <div>
+                    <strong>Cliente</strong>
+                    <p id="client">-</p>
+                </div>
+
+                <div>
+                    <strong>Estado</strong>
+                    <p id="status">-</p>
+                </div>
+
+                <div>
+                    <strong>Drone</strong>
+                    <p id="drone">-</p>
+                </div>
+
+                <div>
+                    <strong>Origen</strong>
+                    <p id="origin">-</p>
+                </div>
+
+                <div>
+                    <strong>Destino</strong>
+                    <p id="destination">-</p>
+                </div>
+
+                <div>
+                    <strong>Peso</strong>
+                    <p id="weight">-</p>
+                </div>
+
+                <div>
+                    <strong>Entrega estimada</strong>
+                    <p id="delivery">-</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="all-packages">
+
+            <h2>Paquetes registrados</h2>
+
+            <button onclick="cargarPaquetes()">
+                Actualizar
+            </button>
+
+            <div id="packagesContainer">
+                Cargando paquetes...
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>DroneTrack © 2026</p>
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
+```
