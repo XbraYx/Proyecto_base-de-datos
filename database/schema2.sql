@@ -2,21 +2,60 @@
 -- DroneTrack - Database Schema
 -- =========================================================
 
-CREATE DATABASE IF NOT EXISTS rastreador_drones
+DROP DATABASE IF EXISTS rastreador_drones;
+
+CREATE DATABASE rastreador_drones
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
 USE rastreador_drones;
 
 
+-- =========================================================
+-- USUARIOS
+-- =========================================================
 
+CREATE TABLE usuarios (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    username VARCHAR(50) NOT NULL UNIQUE,
+
+    email VARCHAR(150) NOT NULL UNIQUE,
+
+    password_hash VARCHAR(255) NOT NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 
 -- =========================================================
--- TABLE: drones
+-- CLIENTES
 -- =========================================================
 
-CREATE TABLE IF NOT EXISTS drones (
+CREATE TABLE clientes (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+
+    user_id INT UNSIGNED NOT NULL UNIQUE,
+
+    name VARCHAR(100) NOT NULL,
+
+    phone VARCHAR(20),
+
+    address VARCHAR(255),
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
+);
+
+
+-- =========================================================
+-- DRONES
+-- =========================================================
+
+CREATE TABLE drones (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
     drone_code VARCHAR(30) NOT NULL UNIQUE,
@@ -36,29 +75,10 @@ CREATE TABLE IF NOT EXISTS drones (
 
 
 -- =========================================================
--- TABLE: clientes
+-- ESTADOS DE PAQUETE
 -- =========================================================
 
-CREATE TABLE IF NOT EXISTS clientes (
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-
-    name VARCHAR(100) NOT NULL,
-
-    email VARCHAR(150) NOT NULL UNIQUE,
-
-    phone VARCHAR(20),
-
-    address VARCHAR(255),
-
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
--- =========================================================
--- TABLE: estados_paquete
--- =========================================================
-
-CREATE TABLE IF NOT EXISTS estados_paquete (
+CREATE TABLE estados_paquete (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -68,10 +88,10 @@ CREATE TABLE IF NOT EXISTS estados_paquete (
 
 
 -- =========================================================
--- TABLE: paquetes
+-- PAQUETES
 -- =========================================================
 
-CREATE TABLE IF NOT EXISTS paquetes (
+CREATE TABLE paquetes (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
     tracking_number VARCHAR(50) NOT NULL UNIQUE,
@@ -106,10 +126,10 @@ CREATE TABLE IF NOT EXISTS paquetes (
 
 
 -- =========================================================
--- TABLE: historial_paquete
+-- HISTORIAL DE PAQUETE
 -- =========================================================
 
-CREATE TABLE IF NOT EXISTS historial_paquete (
+CREATE TABLE historial_paquete (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 
     package_id INT UNSIGNED NOT NULL,
@@ -128,3 +148,27 @@ CREATE TABLE IF NOT EXISTS historial_paquete (
     FOREIGN KEY (status_id)
         REFERENCES estados_paquete(id)
 );
+
+
+-- =========================================================
+-- ESTADOS INICIALES
+-- =========================================================
+
+INSERT INTO estados_paquete (name, description)
+VALUES
+    ('registered', 'El paquete ha sido registrado'),
+    ('preparing', 'El paquete se encuentra en preparación'),
+    ('delivering', 'El paquete está siendo transportado'),
+    ('delivered', 'El paquete fue entregado'),
+    ('cancelled', 'El paquete fue cancelado');
+
+
+-- =========================================================
+-- DRONES DE PRUEBA
+-- =========================================================
+
+INSERT INTO drones (drone_code, status, battery_level)
+VALUES
+    ('DRN-001', 'available', 100),
+    ('DRN-002', 'available', 95),
+    ('DRN-003', 'maintenance', 60);

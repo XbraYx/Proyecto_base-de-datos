@@ -90,6 +90,7 @@ async function cargarPaquetes() {
 // BUSCAR PAQUETE
 // =====================================================
 
+
 async function buscarPaquete() {
 
     const input = document.getElementById("trackingInput");
@@ -106,6 +107,8 @@ async function buscarPaquete() {
         message.textContent =
             "Introduce un número de rastreo.";
 
+        packageInfo.classList.add("hidden");
+
         return;
     }
 
@@ -118,30 +121,23 @@ async function buscarPaquete() {
     try {
 
         const response = await fetch(
-            `${API_URL}/api/paquetes`
+            `${API_URL}/api/paquetes/${encodeURIComponent(trackingNumber)}`
         );
+
+
+        const data = await response.json();
 
 
         if (!response.ok) {
-            throw new Error("Error en la API");
-        }
-
-
-        const paquetes = await response.json();
-
-
-        const paquete = paquetes.find(
-            p => p.tracking_number === trackingNumber
-        );
-
-
-        if (!paquete) {
 
             message.textContent =
-                "No se encontró el paquete.";
+                data.message || "No se encontró el paquete.";
 
             return;
         }
+
+
+        const paquete = data.package;
 
 
         // Mostrar información
@@ -184,6 +180,7 @@ async function buscarPaquete() {
             "No fue posible conectar con el servidor.";
     }
 }
+
 
 
 // =====================================================
